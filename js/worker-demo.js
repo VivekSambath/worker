@@ -18,7 +18,15 @@ function waited(e) {
   return ms > 100 ? " (clicked " + (ms / 1000).toFixed(1) + " s ago, was queued)" : " (handled instantly)";
 }
 
+// Pulse the button so it is visible that the click was handled.
+function flash(btn) {
+  btn.classList.remove("clicked");
+  void btn.offsetWidth; // restart the animation
+  btn.classList.add("clicked");
+}
+
 document.getElementById("colorBtn1").onclick = (e) => {
+  flash(e.currentTarget);
   ci = (ci + 1) % colors.length;
   document.documentElement.style.background = colors[ci];
   document.body.style.background = colors[ci];
@@ -26,6 +34,7 @@ document.getElementById("colorBtn1").onclick = (e) => {
 };
 
 document.getElementById("unlockBtn").onclick = (e) => {
+  flash(e.currentTarget);
   log("Unlock clicked" + waited(e) + (locked ? "" : " - nothing is locked now"));
 };
 

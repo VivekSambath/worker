@@ -129,6 +129,116 @@
       <div class="out" id="lockOut">(click "Lock MAIN thread", then try Unlock and Change page color)</div>
     </section>
 
+    <!-- Engineering: what is inside -->
+    <section class="slide">
+      <h2>What is inside a worker?</h2>
+      <svg class="dia" viewBox="0 0 760 290">
+        <rect class="outer" x="10" y="10" width="300" height="270" />
+        <text x="160" y="36" text-anchor="middle">Main thread</text>
+        <rect x="30" y="55" width="260" height="55" />
+        <text x="160" y="88" text-anchor="middle">Event loop</text>
+        <rect x="30" y="125" width="260" height="55" />
+        <text x="160" y="158" text-anchor="middle">JS heap (own memory)</text>
+        <rect x="30" y="195" width="260" height="55" />
+        <text x="160" y="228" text-anchor="middle">DOM, window, UI</text>
+
+        <rect class="outer" x="450" y="10" width="300" height="270" />
+        <text x="600" y="36" text-anchor="middle">Worker thread</text>
+        <rect class="hot" x="470" y="55" width="260" height="55" />
+        <text x="600" y="88" text-anchor="middle">Event loop</text>
+        <rect class="hot" x="470" y="125" width="260" height="55" />
+        <text x="600" y="158" text-anchor="middle">JS heap (own memory)</text>
+        <rect x="470" y="195" width="260" height="55" />
+        <text x="600" y="228" text-anchor="middle">no DOM, no window</text>
+
+        <line x1="314" y1="95" x2="446" y2="95" marker-end="url(#ah)" />
+        <text class="sm" x="380" y="85" text-anchor="middle">message</text>
+        <line x1="446" y1="150" x2="314" y2="150" marker-end="url(#ah)" />
+        <text class="sm" x="380" y="140" text-anchor="middle">message</text>
+      </svg>
+      <ul>
+        <li>
+          Each worker = its <b>own OS thread</b>, event loop, JS heap, global
+          scope.
+        </li>
+        <li>
+          Messages are queued and delivered by the receiver's event loop (async,
+          never blocking).
+        </li>
+        <li>
+          By default <b>nothing is shared</b>: data is copied, like passing a
+          photocopy of a note. For big buffers use transfer:
+          <code>postMessage(buf, [buf])</code>.
+        </li>
+        <li>
+          A worker can use <code>fetch</code>, WebSocket, timers and IndexedDB,
+          but not <code>window</code>, <code>document</code> or
+          <code>localStorage</code>.
+        </li>
+      </ul>
+      <div class="eg">
+        <span class="t">Real-world example</span>
+        <p>
+          A software team: the main thread is the PM talking to stakeholders,
+          the worker is the developer. The developer never joins stakeholder
+          meetings, and requests pass through a ticket queue.
+        </p>
+      </div>
+    </section>
+
+    <!-- Dedicated Worker: architecture -->
+    <section class="slide">
+      <h2>How does a Dedicated Worker fit in?</h2>
+      <svg class="dia" viewBox="0 0 760 250">
+        <text x="10" y="22">Tab 1</text>
+        <rect x="10" y="30" width="230" height="70" />
+        <text x="125" y="62" text-anchor="middle">Main thread</text>
+        <text class="sm" x="125" y="84" text-anchor="middle">UI + DOM</text>
+        <line
+          x1="244"
+          y1="65"
+          x2="516"
+          y2="65"
+          marker-start="url(#ah)"
+          marker-end="url(#ah)"
+        />
+        <text class="sm" x="380" y="55" text-anchor="middle">postMessage → onmessage</text>
+        <text class="sm" x="380" y="85" text-anchor="middle">onmessage ← postMessage</text>
+        <rect class="hot" x="520" y="30" width="230" height="70" />
+        <text x="635" y="62" text-anchor="middle">Worker A</text>
+        <text class="sm" x="635" y="84" text-anchor="middle">own memory</text>
+        <text x="10" y="152">Tab 2</text>
+        <rect x="10" y="160" width="230" height="70" />
+        <text x="125" y="192" text-anchor="middle">Main thread</text>
+        <text class="sm" x="125" y="214" text-anchor="middle">UI + DOM</text>
+        <line
+          x1="244"
+          y1="195"
+          x2="516"
+          y2="195"
+          marker-start="url(#ah)"
+          marker-end="url(#ah)"
+        />
+        <text class="sm" x="380" y="185" text-anchor="middle">postMessage → onmessage</text>
+        <text class="sm" x="380" y="215" text-anchor="middle">onmessage ← postMessage</text>
+        <rect class="hot" x="520" y="160" width="230" height="70" />
+        <text x="635" y="192" text-anchor="middle">Worker B</text>
+        <text class="sm" x="635" y="214" text-anchor="middle">own memory</text>
+      </svg>
+      <ul>
+        <li><b>1 page = 1 worker.</b> Private, ends when the page closes.</li>
+        <li>Worker A and B cannot see each other.</li>
+      </ul>
+      <div class="eg">
+        <span class="t">Real-world example</span>
+        <p>
+          An online PDF compressor open in two tabs: each tab compresses its own
+          file in its own worker. One tab's work never slows or changes the
+          other.
+        </p>
+      </div>
+    </section>
+
     <!-- Analogy: owner and helper -->
     <section class="slide">
       <h2>What is a worker, in plain terms?</h2>
@@ -231,59 +341,6 @@
       </ul>
     </section>
 
-    <!-- Dedicated Worker: architecture -->
-    <section class="slide">
-      <h2>How does a Dedicated Worker fit in?</h2>
-      <svg class="dia" viewBox="0 0 760 250">
-        <text x="10" y="22">Tab 1</text>
-        <rect x="10" y="30" width="230" height="70" />
-        <text x="125" y="62" text-anchor="middle">Main thread</text>
-        <text class="sm" x="125" y="84" text-anchor="middle">UI + DOM</text>
-        <line
-          x1="244"
-          y1="65"
-          x2="516"
-          y2="65"
-          marker-start="url(#ah)"
-          marker-end="url(#ah)"
-        />
-        <text class="sm" x="380" y="55" text-anchor="middle">postMessage → onmessage</text>
-        <text class="sm" x="380" y="85" text-anchor="middle">onmessage ← postMessage</text>
-        <rect class="hot" x="520" y="30" width="230" height="70" />
-        <text x="635" y="62" text-anchor="middle">Worker A</text>
-        <text class="sm" x="635" y="84" text-anchor="middle">own memory</text>
-        <text x="10" y="152">Tab 2</text>
-        <rect x="10" y="160" width="230" height="70" />
-        <text x="125" y="192" text-anchor="middle">Main thread</text>
-        <text class="sm" x="125" y="214" text-anchor="middle">UI + DOM</text>
-        <line
-          x1="244"
-          y1="195"
-          x2="516"
-          y2="195"
-          marker-start="url(#ah)"
-          marker-end="url(#ah)"
-        />
-        <text class="sm" x="380" y="185" text-anchor="middle">postMessage → onmessage</text>
-        <text class="sm" x="380" y="215" text-anchor="middle">onmessage ← postMessage</text>
-        <rect class="hot" x="520" y="160" width="230" height="70" />
-        <text x="635" y="192" text-anchor="middle">Worker B</text>
-        <text class="sm" x="635" y="214" text-anchor="middle">own memory</text>
-      </svg>
-      <ul>
-        <li><b>1 page = 1 worker.</b> Private, ends when the page closes.</li>
-        <li>Worker A and B cannot see each other.</li>
-      </ul>
-      <div class="eg">
-        <span class="t">Real-world example</span>
-        <p>
-          An online PDF compressor open in two tabs: each tab compresses its own
-          file in its own worker. One tab's work never slows or changes the
-          other.
-        </p>
-      </div>
-    </section>
-
     <!-- Shared Worker: the idea -->
     <section class="slide">
       <h2>What is a Shared Worker?</h2>
@@ -345,63 +402,6 @@
           Stock price dashboard open in 5 tabs: without a shared worker you get
           5 live connections to the server, and with one you get 1. A chat app
           with 3 tabs also shows the same unread count in every tab.
-        </p>
-      </div>
-    </section>
-
-    <!-- Engineering: what is inside -->
-    <section class="slide">
-      <h2>What is inside a worker?</h2>
-      <svg class="dia" viewBox="0 0 760 290">
-        <rect class="outer" x="10" y="10" width="300" height="270" />
-        <text x="160" y="36" text-anchor="middle">Main thread</text>
-        <rect x="30" y="55" width="260" height="55" />
-        <text x="160" y="88" text-anchor="middle">Event loop</text>
-        <rect x="30" y="125" width="260" height="55" />
-        <text x="160" y="158" text-anchor="middle">JS heap (own memory)</text>
-        <rect x="30" y="195" width="260" height="55" />
-        <text x="160" y="228" text-anchor="middle">DOM, window, UI</text>
-
-        <rect class="outer" x="450" y="10" width="300" height="270" />
-        <text x="600" y="36" text-anchor="middle">Worker thread</text>
-        <rect class="hot" x="470" y="55" width="260" height="55" />
-        <text x="600" y="88" text-anchor="middle">Event loop</text>
-        <rect class="hot" x="470" y="125" width="260" height="55" />
-        <text x="600" y="158" text-anchor="middle">JS heap (own memory)</text>
-        <rect x="470" y="195" width="260" height="55" />
-        <text x="600" y="228" text-anchor="middle">no DOM, no window</text>
-
-        <line x1="314" y1="95" x2="446" y2="95" marker-end="url(#ah)" />
-        <text class="sm" x="380" y="85" text-anchor="middle">message</text>
-        <line x1="446" y1="150" x2="314" y2="150" marker-end="url(#ah)" />
-        <text class="sm" x="380" y="140" text-anchor="middle">message</text>
-      </svg>
-      <ul>
-        <li>
-          Each worker = its <b>own OS thread</b>, event loop, JS heap, global
-          scope.
-        </li>
-        <li>
-          Messages are queued and delivered by the receiver's event loop (async,
-          never blocking).
-        </li>
-        <li>
-          By default <b>nothing is shared</b>: data is copied, like passing a
-          photocopy of a note. For big buffers use transfer:
-          <code>postMessage(buf, [buf])</code>.
-        </li>
-        <li>
-          A worker can use <code>fetch</code>, WebSocket, timers and IndexedDB,
-          but not <code>window</code>, <code>document</code> or
-          <code>localStorage</code>.
-        </li>
-      </ul>
-      <div class="eg">
-        <span class="t">Real-world example</span>
-        <p>
-          A software team: the main thread is the PM talking to stakeholders,
-          the worker is the developer. The developer never joins stakeholder
-          meetings, and requests pass through a ticket queue.
         </p>
       </div>
     </section>
