@@ -130,7 +130,7 @@ button {
 .bad {
   color: #ff8b8b;
 }
-#spin {
+.spin {
   display: inline-block;
   width: 28px;
   height: 28px;

@@ -108,6 +108,27 @@
       </div>
     </section>
 
+    <!-- The problem: discussion + live demo -->
+    <section class="slide">
+      <h2>What happens when the main thread is busy?</h2>
+      <ul>
+        <li>
+          Clicks, scrolling, drawing and JavaScript share <b>one thread</b>.
+        </li>
+        <li>
+          During a long loop, clicks wait in a <b>queue</b> and the spinner
+          stops.
+        </li>
+      </ul>
+      <p>Spinner <span class="spin"></span> &mdash; watch it while you click.</p>
+      <p>
+        <button id="lockBtn">Lock MAIN thread (5 s)</button>
+        <button id="unlockBtn">Unlock</button>
+        <button id="colorBtn1">Change page color</button>
+      </p>
+      <div class="out" id="lockOut">(click "Lock MAIN thread", then try Unlock and Change page color)</div>
+    </section>
+
     <!-- Analogy: owner and helper -->
     <section class="slide">
       <h2>What is a worker, in plain terms?</h2>
@@ -178,23 +199,23 @@
         </text>
 
         <text x="575" y="24" text-anchor="middle">
-          Shared: one developer for all
+          Shared: one PM for all developers
         </text>
-        <rect x="400" y="50" width="120" height="44" />
-        <text x="460" y="78" text-anchor="middle">PM 1</text>
-        <rect x="400" y="116" width="120" height="44" />
-        <text x="460" y="144" text-anchor="middle">PM 2</text>
-        <rect x="400" y="182" width="120" height="44" />
-        <text x="460" y="210" text-anchor="middle">PM 3</text>
-        <line x1="524" y1="72" x2="606" y2="120" marker-end="url(#ah)" />
-        <line x1="524" y1="138" x2="606" y2="138" marker-end="url(#ah)" />
-        <line x1="524" y1="204" x2="606" y2="156" marker-end="url(#ah)" />
-        <rect class="hot" x="610" y="80" width="140" height="115" />
-        <text x="680" y="130" text-anchor="middle">Shared</text>
-        <text x="680" y="152" text-anchor="middle">developer</text>
-        <text class="sm" x="680" y="176" text-anchor="middle">one backlog</text>
+        <rect class="hot" x="400" y="80" width="140" height="115" />
+        <text x="470" y="130" text-anchor="middle">Shared</text>
+        <text x="470" y="152" text-anchor="middle">PM</text>
+        <text class="sm" x="470" y="176" text-anchor="middle">one backlog</text>
+        <line x1="544" y1="120" x2="626" y2="72" marker-end="url(#ah)" />
+        <line x1="544" y1="138" x2="626" y2="138" marker-end="url(#ah)" />
+        <line x1="544" y1="156" x2="626" y2="204" marker-end="url(#ah)" />
+        <rect x="630" y="50" width="120" height="44" />
+        <text x="690" y="78" text-anchor="middle">Developer 1</text>
+        <rect x="630" y="116" width="120" height="44" />
+        <text x="690" y="144" text-anchor="middle">Developer 2</text>
+        <rect x="630" y="182" width="120" height="44" />
+        <text x="690" y="210" text-anchor="middle">Developer 3</text>
         <text class="sm" x="575" y="258" text-anchor="middle">
-          every PM sees the same backlog
+          every developer sees the same backlog
         </text>
       </svg>
       <ul>
@@ -204,8 +225,8 @@
         </li>
         <li>
           <b>Shared</b> (<code>new SharedWorker('shared-worker/shared-worker.js')</code>): one
-          developer serves every PM (tab). They work until the last
-          PM's project ends.
+          PM coordinates every developer (tab) from the same backlog. They work
+          until the last developer's project ends.
         </li>
       </ul>
     </section>
@@ -261,25 +282,6 @@
           other.
         </p>
       </div>
-    </section>
-
-    <!-- Live demo: freeze vs no freeze -->
-    <section class="slide">
-      <h2>Live demo: freeze vs no freeze</h2>
-      <p>Spinner <span id="spin"></span> &mdash; watch it while you click.</p>
-      <p>
-        <button id="lockBtn">Lock MAIN thread (5 s)</button>
-        <button id="unlockBtn">Unlock</button>
-        <button id="heavyWorker">Heavy loop in WORKER (5 s)</button>
-      </p>
-      <p>
-        While it runs, click
-        <button id="colorBtn">Change page color</button>
-        &mdash; with the MAIN thread locked, nothing responds for 5 s: the color
-        change and the Unlock click are queued and handled only after the lock
-        ends. With the WORKER, the color changes instantly.
-      </p>
-      <div class="out" id="heavyOut">(click a button)</div>
     </section>
 
     <!-- Shared Worker: the idea -->

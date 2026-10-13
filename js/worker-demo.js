@@ -1,6 +1,7 @@
-// ---- demo: lock the main thread vs run the same work in a worker ----
-const out = document.getElementById("heavyOut");
+// ---- demo: lock the main thread ----
 const LOOP_MS = 5000; // how long the work runs
+
+const out = document.getElementById("lockOut");
 const lines = [];
 function log(msg) {
   lines.push(msg);
@@ -17,7 +18,7 @@ function waited(e) {
   return ms > 100 ? " (clicked " + (ms / 1000).toFixed(1) + " s ago, was queued)" : " (handled instantly)";
 }
 
-document.getElementById("colorBtn").onclick = (e) => {
+document.getElementById("colorBtn1").onclick = (e) => {
   ci = (ci + 1) % colors.length;
   document.documentElement.style.background = colors[ci];
   document.body.style.background = colors[ci];
@@ -38,22 +39,4 @@ document.getElementById("lockBtn").onclick = () => {
     locked = false;
     log("Lock released by itself after 5 s. Queued clicks are handled next:");
   }, 50);
-};
-
-// Same 5 s of work, but in a worker: the page stays free.
-const heavyUrl = URL.createObjectURL(
-  new Blob([
-    `onmessage=()=>{const t=Date.now();while(Date.now()-t<${LOOP_MS});postMessage("done")}`,
-  ]),
-);
-
-document.getElementById("heavyWorker").onclick = () => {
-  lines.length = 0;
-  log("5 s of work in a WORKER: spinner keeps spinning, buttons still work.");
-  const w = new Worker(heavyUrl);
-  w.onmessage = () => {
-    log("Worker finished.");
-    w.terminate();
-  };
-  w.postMessage("go");
 };
