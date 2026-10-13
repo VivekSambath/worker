@@ -1,0 +1,229 @@
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  height: 100%;
+  font-family: system-ui, sans-serif;
+  background: #000;
+  color: #eee;
+}
+.cards {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+.card {
+  flex: 1 1 280px;
+  background: #0d0d0d;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+}
+.card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+  color: #fff;
+}
+.card p,
+.card li {
+  font-size: 1.1rem;
+}
+.slide {
+  display: none;
+  height: 100%;
+  padding: 3rem 4rem 4.5rem;
+  overflow-y: auto;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.slide.active {
+  display: flex;
+}
+h1 {
+  font-size: 2.6rem;
+  margin: 0 0 1rem;
+}
+h2 {
+  font-size: 2rem;
+  margin: 0 0 1.25rem;
+  color: #fff;
+}
+p,
+li {
+  font-size: 1.25rem;
+  line-height: 1.6;
+}
+ul {
+  padding-left: 1.4rem;
+}
+code,
+pre {
+  font-family: Consolas, monospace;
+}
+code {
+  background: #1a1a1a;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+}
+pre {
+  background: #0a0a0a;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+.diagram {
+  background: #0a0a0a;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 1.05rem;
+  line-height: 1.4;
+  white-space: pre;
+  font-family: Consolas, monospace;
+  overflow-x: auto;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 1.1rem;
+}
+th,
+td {
+  border: 1px solid #2a2a2a;
+  padding: 0.55rem 0.8rem;
+  text-align: left;
+}
+th {
+  background: #1a1a1a;
+}
+button {
+  padding: 0.55rem 1.1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 6px;
+  border: 0;
+  background: #eee;
+  color: #000;
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+.out {
+  background: #0a0a0a;
+  color: #9f9;
+  padding: 0.75rem;
+  border-radius: 8px;
+  min-height: 3.5rem;
+  white-space: pre-wrap;
+  margin-top: 1rem;
+  font-family: Consolas, monospace;
+}
+.big {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #fff;
+}
+.bad {
+  color: #ff8b8b;
+}
+#spin {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  border: 4px solid #fff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: s 1s linear infinite;
+  vertical-align: middle;
+  margin-left: 0.5rem;
+}
+@keyframes s {
+  to {
+    transform: rotate(360deg);
+  }
+}
+svg.dia {
+  width: 100%;
+  max-height: 52vh;
+  background: #0a0a0a;
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+svg.dia rect {
+  fill: #111;
+  stroke: #888;
+  stroke-width: 2;
+  rx: 8;
+}
+svg.dia rect.outer {
+  fill: none;
+  stroke: #555;
+  stroke-dasharray: 6 4;
+}
+svg.dia rect.hot {
+  stroke: #fff;
+}
+svg.dia text {
+  fill: #eee;
+  font:
+    17px system-ui,
+    sans-serif;
+}
+svg.dia text.sm {
+  fill: #999;
+  font-size: 14px;
+}
+svg.dia line,
+svg.dia path.ar {
+  stroke: #ccc;
+  stroke-width: 2;
+  fill: none;
+}
+.steps {
+  margin: 0.4rem 0;
+}
+.steps li {
+  font-size: 1.05rem;
+  line-height: 1.4;
+}
+#pos {
+  position: fixed;
+  right: 1rem;
+  bottom: 0.6rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+.eg {
+  margin-top: 1.25rem;
+  border-left: 4px solid #fff;
+  background: #0d0d0d;
+  padding: 0.6rem 1rem;
+  border-radius: 0 8px 8px 0;
+}
+.eg .t {
+  display: block;
+  color: #999;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.eg p {
+  margin: 0.25rem 0;
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+
+.defs {
+  position: absolute;
+}
+.hint {
+  color: #999;
+}
+#slog {
+  max-height: 14rem;
+  overflow-y: auto;
+}
